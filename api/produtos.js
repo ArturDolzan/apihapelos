@@ -8,6 +8,7 @@ module.exports = app => {
 
         app.db('produtos')
             .select(
+                'id',
                 'nome',
                 'descricao',
                 'tamanho',
