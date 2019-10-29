@@ -2,6 +2,7 @@ const moment = require('moment')
 const Promise = require('bluebird');
 
 module.exports = app => {
+    
     const getProdutos = (req, res) => {
         // const date = req.query.date ? req.query.date
         //     : moment().endOf('day').toDate()
@@ -18,6 +19,29 @@ module.exports = app => {
                 'desconto'                
             )
             .select(app.db.raw(` replace(replace(replace(replace(replace(encode(foto, 'base64'), '\n', ''), '\', ''), ';', ''), ':', ''), ',', '') AS foto`))
+            .then(tasks => res.json(tasks))
+            .catch(err => res.status(400).json(err))
+    }
+
+    const recuperarPorId = (req, res) => {
+        
+        if (!req.params.id) {
+            return res.status(400).json('É necessário passar o código do produto na requisição!')
+        }
+
+        app.db('produtos')
+            .select(
+                'id',
+                'nome',
+                'descricao',
+                'tamanho',
+                'dimensoes',
+                'preco',
+                'cor',
+                'desconto'                
+            )
+            .select(app.db.raw(` replace(replace(replace(replace(replace(encode(foto, 'base64'), '\n', ''), '\', ''), ';', ''), ':', ''), ',', '') AS foto`))
+            .where({id: req.params.id})
             .then(tasks => res.json(tasks))
             .catch(err => res.status(400).json(err))
     }
@@ -173,5 +197,5 @@ module.exports = app => {
 
     }
 
-    return { getProdutos, save, remove, uploadBase64Photo, downloadBase64Photo }
+    return { getProdutos, save, remove, uploadBase64Photo, downloadBase64Photo, recuperarPorId }
 }

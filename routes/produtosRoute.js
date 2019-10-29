@@ -5,6 +5,9 @@ module.exports = app => {
     app.route(`${config.routeProd}/produtos`)
         .get(app.api.produtos.getProdutos)
 
+    app.route(`${config.routeProd}/produtos/recuperarPorId/:id`)
+        .get(app.api.produtos.recuperarPorId)
+
     app.route(`${config.routeProd}/produtos`)
         .all(app.config.passport.authenticate())
         .post(app.api.produtos.save)
