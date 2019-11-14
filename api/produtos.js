@@ -106,8 +106,8 @@ module.exports = app => {
                     .update({ 
                         likes: produto.likes + 1
                     })
-                    .then(() => {                        
-                        res.status(204).send()
+                    .then((data) => {                        
+                        res.status(200).send({ id: data })
                     })
 
             })
