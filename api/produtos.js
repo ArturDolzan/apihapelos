@@ -107,7 +107,7 @@ module.exports = app => {
                         likes: produto.likes + 1
                     })
                     .then((data) => {                        
-                        res.status(200).send({ id: data })
+                        res.status(200).send({ id: req.params.id })
                     })
 
             })
