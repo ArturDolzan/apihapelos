@@ -20,6 +20,7 @@ module.exports = app => {
                 'likes'              
             )
             .select(app.db.raw(` replace(replace(replace(replace(replace(encode(foto, 'base64'), '\n', ''), '\', ''), ';', ''), ':', ''), ',', '') AS foto`))
+            .orderBy('nome', 'asc')
             .then(tasks => res.json(tasks))
             .catch(err => res.status(400).json(err))
     }
