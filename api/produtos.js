@@ -16,7 +16,8 @@ module.exports = app => {
                 'dimensoes',
                 'preco',
                 'cor',
-                'desconto'                
+                'desconto',
+                'likes'              
             )
             .select(app.db.raw(` replace(replace(replace(replace(replace(encode(foto, 'base64'), '\n', ''), '\', ''), ';', ''), ':', ''), ',', '') AS foto`))
             .then(tasks => res.json(tasks))
@@ -38,7 +39,8 @@ module.exports = app => {
                 'dimensoes',
                 'preco',
                 'cor',
-                'desconto'                
+                'desconto',
+                'likes'                
             )
             .select(app.db.raw(` replace(replace(replace(replace(replace(encode(foto, 'base64'), '\n', ''), '\', ''), ';', ''), ':', ''), ',', '') AS foto`))
             .where({id: req.params.id})
@@ -60,6 +62,7 @@ module.exports = app => {
                 preco: req.body.preco,
                 cor: req.body.cor,
                 desconto: req.body.desconto,
+                likes: 0,
                 foto: app.db.raw(`decode(?, 'base64')`, req.body.foto)
             })
             .then(_ => res.status(204).send())
@@ -77,6 +80,35 @@ module.exports = app => {
                     const msg = `Não foi encontrado Produto com id ${req.params.id}.`
                     res.status(400).send(msg)
                 }
+            })
+            .catch(err => res.status(400).json(err))
+    }
+
+    const addLike = (req, res) => {
+        
+        if (!req.params.id) {
+            return res.status(400).json(`É necessário passar o Id do produto na query da requisição!`)
+        }
+
+        app.db('produtos')
+            .select('likes')
+            .where({ id: req.params.id })
+            .first()
+            .then(produto => {
+                
+                if (!produto) {
+                    return res.status(400).json(`Produto de id ${req.params.id} não encontrado!`)
+                }
+
+                app.db('produtos')
+                    .where({ id: req.params.id })
+                    .update({ 
+                        likes: produto.likes + 1
+                    })
+                    .then(() => {                        
+                        res.status(204).send()
+                    })
+
             })
             .catch(err => res.status(400).json(err))
     }
@@ -197,5 +229,5 @@ module.exports = app => {
 
     }
 
-    return { getProdutos, save, remove, uploadBase64Photo, downloadBase64Photo, recuperarPorId }
+    return { getProdutos, save, remove, uploadBase64Photo, downloadBase64Photo, recuperarPorId, addLike }
 }
